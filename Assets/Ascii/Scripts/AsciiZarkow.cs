@@ -20,9 +20,10 @@ namespace AsciiImageEffect
 	[AddComponentMenu("Image Effects/AsciiZarkow")]
 	public sealed class AsciiZarkow : MonoBehaviour
 	{
-		public Vector2 charSize = new Vector2(9f, 10f);
+		public Vector2 charSize = new Vector2(12f, 12f);
 		[Range(0f, 1f)] public float charColTransp = 1f;
 		[Range(0f, 1f)] public float bgColTransp = 0f;
+		public bool fog = true;
 		[Range(0f, 0.25f)] public float fogDensity = .08f;
 		public Color fogColor = Color.black;
 
@@ -59,7 +60,7 @@ namespace AsciiImageEffect
 			//Pour éviter que la prefab ne change les paramètres à chaque fois
 			if (!PrefabModeIsActive(gameObject))
 			{
-
+				RenderSettings.fog = fog;
 				RenderSettings.fogColor = fogColor;
 				RenderSettings.fogDensity = fogDensity;
 

@@ -1,10 +1,19 @@
 fileFormatVersion: 2
 guid: 4a00c2a8b587b8d4fa26076c50d7176a
-timeCreated: 1438262260
-licenseType: Free
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - Bracket: {fileID: 1496406156, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
+  - And: {fileID: 1278122455, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
+  - Dollar: {fileID: 960160347, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
+  - R: {fileID: -487639870, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
+  - P: {fileID: 1791278646, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
+  - Asterix: {fileID: -1481233728, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
+  - Plus: {fileID: -754390692, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
+  - Tilde: {fileID: 307571549, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
+  - Minus: {fileID: 1333313091, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
+  - Dot: {fileID: -1747737240, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
