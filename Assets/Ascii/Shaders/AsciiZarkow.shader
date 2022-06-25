@@ -6,7 +6,7 @@
 //http://www.digitalsoftware.se/community/thread-19.html
 
 // http://unity3d.com/support/documentation/Components/SL-Shader.html
-Shader "AsciiZarkow"
+Shader "Custom/Camera/Ascii Image Effect"
 {
   // http://unity3d.com/support/documentation/Components/SL-Properties.html
   Properties
@@ -29,25 +29,18 @@ float monitorHeightMultiplier = 1.0f;
 sampler texture1 : register(s0);
 sampler texture2 : register(s1);
 
-sampler2D BracketSampler;
+sampler2D Light0Sampler;
+sampler2D Light1Sampler;
+sampler2D Light2Sampler;
+sampler2D Light3Sampler;
+sampler2D Light4Sampler;
+sampler2D Light5Sampler;
+sampler2D Light6Sampler;
+sampler2D Light7Sampler;
+sampler2D Light8Sampler;
+sampler2D Light9Sampler;
 
-sampler2D AndSampler;
 
-sampler2D DollarSampler;
-
-sampler2D RSampler;
-
-sampler2D PSampler;
-
-sampler2D AsterixSampler;
-
-sampler2D PlusSampler;
-
-sampler2D TildeSampler;
-
-sampler2D MinusSampler;
-
-sampler2D DotSampler;
 
 struct VertexShaderInput
 {
@@ -115,56 +108,55 @@ float4 PixelShaderFunction(v2f_img i) : COLOR // was float2 texCoord : TEXCOORD0
 
 	if (step < 0.5f)
 	{
-		tex2 = tex2D(BracketSampler, float2(pixelCoord.x, pixelCoord.y));
+		tex2 = tex2D(Light0Sampler, float2(pixelCoord.x, pixelCoord.y));
 		//tex1.rgb = float3(0.15f, 0, 0);
 	}
 	else if (step < 1.5f)
 	{
-		tex2 = tex2D(AndSampler, float2(pixelCoord.x, pixelCoord.y));
+		tex2 = tex2D(Light1Sampler, float2(pixelCoord.x, pixelCoord.y));
 		//tex1.rgb = float3(0.30f, 0, 0);
 	}
 	else if (step < 2.5f)
 	{
-		tex2 = tex2D(DollarSampler, float2(pixelCoord.x, pixelCoord.y));
+		tex2 = tex2D(Light2Sampler, float2(pixelCoord.x, pixelCoord.y));
 		//tex1.rgb = float3(0.45f, 0, 0);
 	}
 	else if (step < 3.5f)
 	{
-		tex2 = tex2D(RSampler, float2(pixelCoord.x, pixelCoord.y));
+		tex2 = tex2D(Light3Sampler, float2(pixelCoord.x, pixelCoord.y));
 		//tex1.rgb = float3(0.60f, 0, 0);
 	}
 	else if (step < 4.5f)
 	{
-		tex2 = tex2D(PSampler, float2(pixelCoord.x, pixelCoord.y));
+		tex2 = tex2D(Light4Sampler, float2(pixelCoord.x, pixelCoord.y));
 		//tex1.rgb = float3(0.75f, 0, 0);
 	}
 	else if (step < 5.5f)
 	{
-		tex2 = tex2D(AsterixSampler, float2(pixelCoord.x, pixelCoord.y));
+		tex2 = tex2D(Light5Sampler, float2(pixelCoord.x, pixelCoord.y));
 		//tex1.rgb = float3(1.0f, 0, 0.15f);
 		tex2.r = tex2.a;
 	}
 	else if (step < 6.5f)
 	{
-		//tex2 = tex2D(PlusSampler, float2(texCoord.x * charCountWide, texCoord.y * charCountTall));
-		tex2 = tex2D(PlusSampler, float2(pixelCoord.x, pixelCoord.y));
+		tex2 = tex2D(Light6Sampler, float2(pixelCoord.x, pixelCoord.y));
 		// tex1.rgb = float3(0, 0, 0.30f);
 		//tex2.b = 0.75f;
 	}
 	else if (step < 7.5f)
 	{
-		tex2 = tex2D(TildeSampler, float2(pixelCoord.x, pixelCoord.y));
+		tex2 = tex2D(Light7Sampler, float2(pixelCoord.x, pixelCoord.y));
 		//tex1.rgb = float3(0, 0, 0.45f);
 		tex2.b = 0.75f;
 	}
 	else if (step < 8.5f)
 	{
-		tex2 = tex2D(MinusSampler, float2(pixelCoord.x, pixelCoord.y));
+		tex2 = tex2D(Light8Sampler, float2(pixelCoord.x, pixelCoord.y));
 		//tex1.rgb = float3(0, 0, 0.60f);
 	}
 	else if (step < 9.5f)
 	{
-		tex2 = tex2D(DotSampler, float2(pixelCoord.x, pixelCoord.y));
+		tex2 = tex2D(Light9Sampler, float2(pixelCoord.x, pixelCoord.y));
 		//tex1.rgb = float3(0, 0, 0.75f);
 	}
 	else

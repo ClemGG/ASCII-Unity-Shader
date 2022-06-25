@@ -3,78 +3,119 @@
 // Copyright (c) Digital Software/Johan Munkestam. All rights reserved.
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//From ASCIIZarkov's ASCII Shader:
+//http://www.digitalsoftware.se/community/thread-19.html
+
+
 using System;
+using UnityEngine;
+
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using UnityEditor.Sprites;
-using UnityEngine;
-using UnityEngine.U2D;
+#endif
 
-namespace AsciiImageEffect
+namespace Project.Shaders.AsciiImageEffect
 {
     /// <summary>
     /// Ascii - Image Effect.
     /// </summary>
     [ExecuteInEditMode]
     [RequireComponent(typeof(Camera))]
-	[AddComponentMenu("Image Effects/AsciiZarkow")]
+	[AddComponentMenu("Image Effects/Ascii Camera Effect")]
 	public sealed class AsciiZarkow : MonoBehaviour
 	{
-		public Vector2 charSize = new Vector2(12f, 12f);
-		[Range(0f, 1f)] public float charColTransp = 1f;
-		[Range(0f, 1f)] public float bgColTransp = 0f;
-		public bool fog = true;
-		[Range(0f, 0.25f)] public float fogDensity = .08f;
-		public Color fogColor = Color.black;
 
-		public Sprite Bracket;
-		public Sprite And;
-		public Sprite Dollar;
-		public Sprite R;
-		public Sprite P;
-		public Sprite Asterix;
-		public Sprite Plus;
-		public Sprite Tilde;
-		public Sprite Minus;
-		public Sprite Dot;
+		#region Public Properties
 
-		private Shader shader;
-		
-		private Material material;
+		[field: SerializeField]
+		private Shader Shader { get; set; }
 
-		private Texture BracketSamplerTexture;
-		private Texture AndSamplerTexture;
-		private Texture DollarSamplerTexture;
-		private Texture RSamplerTexture;
-		private Texture PSamplerTexture;
-		private Texture AsterixSamplerTexture;
-		private Texture PlusSamplerTexture;
-		private Texture TildeSamplerTexture;
-		private Texture MinusSamplerTexture;
-		private Texture DotSamplerTexture;
+		[field: SerializeField] 
+		private Vector2 CharSize { get; set; } = new Vector2(12f, 12f);
+		[field: SerializeField, Range(0f, 1f)]
+		private float CharColTransp { get; set; } = 1f;
+		[field: SerializeField, Range(0f, 1f)]
+		private float BgColTransp { get; set; } = 0f;
+		[field: SerializeField]
+		private bool Fog { get; set; } = false;
+		[field: SerializeField, Range(0f, 0.25f)]
+		private float FogDensity { get; set; } = .08f;
+		[field: SerializeField]
+		private Color FogColor { get; set; } = Color.black;
+
+
+		//Light0 : the brightest ; Light9 : the darkest
+		[field: SerializeField] 
+		private Sprite Light0 { get; set; }
+		[field: SerializeField] 
+		private Sprite Light1 { get; set; }
+		[field: SerializeField] 
+		private Sprite Light2 { get; set; }
+		[field: SerializeField] 
+		private Sprite Light3 { get; set; }
+		[field: SerializeField] 
+		private Sprite Light4 { get; set; }
+		[field: SerializeField] 
+		private Sprite Light5 { get; set; }
+		[field: SerializeField] 
+		private Sprite Light6 { get; set; }
+		[field: SerializeField] 
+		private Sprite Light7 { get; set; }
+		[field: SerializeField] 
+		private Sprite Light8 { get; set; }
+		[field: SerializeField] 
+		private Sprite Light9 { get; set; }
+
+        #endregion
+
+        #region Private Properties
+
+		private Material _materialToUse;
+		private Material _materialToEdit;
+		private Camera _camera;
+
+		//Passed to the material
+		private Texture _light0SamplerTex;
+		private Texture _light1SamplerTex;
+		private Texture _light2SamplerTex;
+		private Texture _light3SamplerTex;
+		private Texture _light4SamplerTex;
+		private Texture _light5SamplerTex;
+		private Texture _light6SamplerTex;
+		private Texture _light7SamplerTex;
+		private Texture _light8SamplerTex;
+		private Texture _light9SamplerTex;
+
+        #endregion
 
 #if UNITY_EDITOR
 
-		private void OnValidate()
+        private void OnValidate()
 		{
-			//Pour éviter que la prefab ne change les paramètres à chaque fois
+			//Pour éviter que la prefab ne change les paramètres au lieu de l'instance
 			if (!PrefabModeIsActive(gameObject))
 			{
-				RenderSettings.fog = fog;
-				RenderSettings.fogColor = fogColor;
-				RenderSettings.fogDensity = fogDensity;
+				RenderSettings.fog = Fog;
+				RenderSettings.fogColor = FogColor;
+				RenderSettings.fogDensity = FogDensity;
 
-                Awake();
-                OnEnable();
-            }
+				if (enabled && gameObject.activeInHierarchy)
+				{
+					Awake();
+				}
+			}
         }
 
         bool PrefabModeIsActive(GameObject gameobject)
 		{
-			PrefabStage prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
-			bool isValidPrefabStage = prefabStage != null && prefabStage.stageHandle.IsValid();
-			bool prefabConnected = PrefabUtility.GetPrefabInstanceStatus(gameObject) == PrefabInstanceStatus.Connected;
-			return isValidPrefabStage || !prefabConnected;
+			bool isObjInPrefabMode = PrefabStageUtility.GetPrefabStage(gameobject) != null;
+			bool isPrefabModeActive = PrefabStageUtility.GetCurrentPrefabStage() != null;
+			return isObjInPrefabMode || isPrefabModeActive;
+			//PrefabStage prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+			//bool isValidPrefabStage = prefabStage != null && prefabStage.stageHandle.IsValid();
+			//bool prefabConnected = PrefabUtility.GetPrefabInstanceStatus(gameObject) == PrefabInstanceStatus.Connected;
+			//return isValidPrefabStage || !prefabConnected;
 		}
 
 #endif
@@ -82,12 +123,21 @@ namespace AsciiImageEffect
 
 		private void Awake()
 		{
-            shader = Resources.Load<Shader>(@"Shaders/AsciiZarkow");
-            if (shader == null) {
-				Debug.LogError (@"Ascii shader not found.");
+			_camera = GetComponent<Camera>();
+
+            if (!Shader) {
+				Debug.LogError ("Ascii shader not found.");
 				
 				this.enabled = false;
 			}
+
+
+			if (!_materialToEdit)
+            {
+				_materialToEdit = new Material(Shader);
+			}
+
+			EditMaterial();
 		}
 
 		/// <summary>
@@ -95,19 +145,7 @@ namespace AsciiImageEffect
 		/// </summary>
 		private void OnEnable()
 		{
-			if (shader == null)
-			{
-				Debug.LogError(string.Format("'{0}' shader null.", this.GetType().ToString()));
-				
-				this.enabled = false;
-			}
-			else
-			{
-				CreateMaterial();
-				
-				if (material == null)
-					this.enabled = false;
-			}
+			_materialToUse = _materialToEdit;
 		}
 		
 		/// <summary>
@@ -115,77 +153,38 @@ namespace AsciiImageEffect
 		/// </summary>
 		private void OnDisable()
 		{
-			if (material != null)
-				DestroyImmediate(material);
+			_materialToUse = null;
+			DestroyTextures();
 		}
 
-		/// <summary>
-		/// Creates the material.
-		/// </summary>
-		private void CreateMaterial()
+        /// <summary>
+        /// Creates the material.
+        /// </summary>
+        private void EditMaterial()
 		{
-			if (shader != null)
-			{
-				if (material != null)
-				{
-					if (Application.isEditor == true)
-					{
-						DestroyImmediate(material);
-						DestroyImmediate(BracketSamplerTexture);
-						DestroyImmediate(AndSamplerTexture);
-						DestroyImmediate(DollarSamplerTexture);
-						DestroyImmediate(RSamplerTexture);
-						DestroyImmediate(PSamplerTexture);
-						DestroyImmediate(AsterixSamplerTexture);
-						DestroyImmediate(PlusSamplerTexture);
-						DestroyImmediate(TildeSamplerTexture);
-						DestroyImmediate(MinusSamplerTexture);
-						DestroyImmediate(DotSamplerTexture);
-					}
-                    else
-                    {
-						Destroy(material);
-						Destroy(BracketSamplerTexture);
-						Destroy(AndSamplerTexture);
-						Destroy(DollarSamplerTexture);
-						Destroy(RSamplerTexture);
-						Destroy(PSamplerTexture);
-						Destroy(AsterixSamplerTexture);
-						Destroy(PlusSamplerTexture);
-						Destroy(TildeSamplerTexture);
-						Destroy(MinusSamplerTexture);
-						Destroy(DotSamplerTexture);
-					}
-				}
-				
-				material = new Material(shader);
-				if (material == null)
-				{
-					Debug.LogWarning(string.Format("'{0}' material null.", this.name));
-					return;
-				}
+			DestroyTextures();
 
-                {
-                    BracketSamplerTexture = LoadTexture(Bracket);
-                    AndSamplerTexture = LoadTexture(And);
-                    DollarSamplerTexture = LoadTexture(Dollar);
-                    RSamplerTexture = LoadTexture(R);
-                    PSamplerTexture = LoadTexture(P);
-                    AsterixSamplerTexture = LoadTexture(Asterix);
-                    PlusSamplerTexture = LoadTexture(Plus);
-                    TildeSamplerTexture = LoadTexture(Minus);
-                    MinusSamplerTexture = LoadTexture(Tilde);
-                    DotSamplerTexture = LoadTexture(Dot);
+			_light0SamplerTex = LoadTexture(Light0);
+			_light1SamplerTex = LoadTexture(Light1);
+			_light2SamplerTex = LoadTexture(Light2);
+			_light3SamplerTex = LoadTexture(Light3);
+			_light4SamplerTex = LoadTexture(Light4);
+			_light5SamplerTex = LoadTexture(Light5);
+			_light6SamplerTex = LoadTexture(Light6);
+			_light7SamplerTex = LoadTexture(Light8);
+			_light8SamplerTex = LoadTexture(Light7);
+			_light9SamplerTex = LoadTexture(Light9);
 
-                }
 
-			}
+			SetTexturesOnMaterial();
+			SetCharRenderSettingsOnMaterial();
+			_materialToUse = _materialToEdit;
 		}
 
-		private Texture LoadTexture(Sprite sprite)
+        private Texture LoadTexture(Sprite sprite)
 		{
 
-			Texture2D tex = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
+			Texture2D tex = new((int)sprite.rect.width, (int)sprite.rect.height);
 			Color[] pixels = sprite.texture.GetPixels((int)sprite.textureRect.x,
 													(int)sprite.textureRect.y,
 													(int)sprite.textureRect.width,
@@ -193,16 +192,16 @@ namespace AsciiImageEffect
 			tex.SetPixels(pixels);
 			tex.Apply();
 
-			//if (tex == null)
-			//{
-			//	Debug.LogError(string.Format("Texture '{0}' not found!", "Textures/" + sprite.name));
+            if (tex == null)
+            {
+                Debug.LogError(string.Format("Texture '{0}' not found!", sprite.name));
 
-			//	return null;
-			//}
-			//Debug.Log("Loaded " + sprite.name);
+                return null;
+            }
+			//Debug.Log($"Loaded '{sprite.name}'", gameObject);
 
-			// safety, if forgotten when we added them
-			tex.wrapMode = TextureWrapMode.Repeat;
+            // safety, if forgotten when we added them
+            tex.wrapMode = TextureWrapMode.Repeat;
 			tex.filterMode = FilterMode.Point;
 			tex.hideFlags = HideFlags.HideAndDontSave;
 
@@ -211,29 +210,60 @@ namespace AsciiImageEffect
 
 
 
+		private void DestroyTextures()
+		{
+			DestroyImmediate(_light0SamplerTex);
+			DestroyImmediate(_light1SamplerTex);
+			DestroyImmediate(_light2SamplerTex);
+			DestroyImmediate(_light3SamplerTex);
+			DestroyImmediate(_light4SamplerTex);
+			DestroyImmediate(_light5SamplerTex);
+			DestroyImmediate(_light6SamplerTex);
+			DestroyImmediate(_light7SamplerTex);
+			DestroyImmediate(_light8SamplerTex);
+			DestroyImmediate(_light9SamplerTex);
+		}
+
+
+
+		private void SetCharRenderSettingsOnMaterial()
+		{
+			_materialToEdit.SetFloat(@"charColTransp", CharColTransp);
+			_materialToEdit.SetFloat(@"bgColTransp", BgColTransp);
+
+			//We use Mathf.Abs in case we use split screen cameras
+			_materialToEdit.SetFloat(@"monitorWidthMultiplier", Screen.width / CharSize.x);
+			_materialToEdit.SetFloat(@"monitorHeightMultiplier", Screen.height / CharSize.y);
+
+            //print(Screen.width + " ; " + Screen.height);
+        }
+
+
+		private void SetTexturesOnMaterial()
+		{
+			_materialToEdit.SetTexture(@"Light0Sampler", _light0SamplerTex);
+			_materialToEdit.SetTexture(@"Light1Sampler", _light1SamplerTex);
+			_materialToEdit.SetTexture(@"Light2Sampler", _light2SamplerTex);
+			_materialToEdit.SetTexture(@"Light3Sampler", _light3SamplerTex);
+			_materialToEdit.SetTexture(@"Light4Sampler", _light4SamplerTex);
+			_materialToEdit.SetTexture(@"Light5Sampler", _light5SamplerTex);
+			_materialToEdit.SetTexture(@"Light6Sampler", _light6SamplerTex);
+			_materialToEdit.SetTexture(@"Light7Sampler", _light7SamplerTex);
+			_materialToEdit.SetTexture(@"Light8Sampler", _light8SamplerTex);
+			_materialToEdit.SetTexture(@"Light9Sampler", _light9SamplerTex);
+		}
 
 		private void OnRenderImage(RenderTexture source, RenderTexture destination)
 		{
-			if (material != null)
+			if (_materialToUse)
 			{
-				material.SetFloat(@"charColTransp", charColTransp);
-				material.SetFloat(@"bgColTransp", bgColTransp);
-				material.SetFloat(@"monitorWidthMultiplier", Screen.width / charSize.x);
-				material.SetFloat(@"monitorHeightMultiplier", Screen.height / charSize.y);
+                if (!Application.isPlaying)
+                {
+					SetCharRenderSettingsOnMaterial();
+					SetTexturesOnMaterial();
+                }
 
-				//print(Screen.width / charSize.x + " ; " + Screen.height / charSize.y);
-
-				material.SetTexture(@"BracketSampler", BracketSamplerTexture);
-				material.SetTexture(@"AndSampler", AndSamplerTexture);
-				material.SetTexture(@"DollarSampler", DollarSamplerTexture);
-				material.SetTexture(@"RSampler", RSamplerTexture);
-				material.SetTexture(@"PSampler", PSamplerTexture);
-				material.SetTexture(@"AsterixSampler", AsterixSamplerTexture);
-				material.SetTexture(@"PlusSampler", PlusSamplerTexture);
-				material.SetTexture(@"TildeSampler", TildeSamplerTexture);
-				material.SetTexture(@"MinusSampler", MinusSamplerTexture);
-				material.SetTexture(@"DotSampler", DotSamplerTexture);
-				Graphics.Blit(source, destination, material, 0);
+				Graphics.Blit(source, destination, _materialToUse, 0);
 			}
 		}
 	}

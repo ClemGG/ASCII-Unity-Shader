@@ -4,16 +4,28 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - Bracket: {fileID: 1496406156, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
-  - And: {fileID: 1278122455, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
-  - Dollar: {fileID: 960160347, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
-  - R: {fileID: -487639870, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
-  - P: {fileID: 1791278646, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
-  - Asterix: {fileID: -1481233728, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
-  - Plus: {fileID: -754390692, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
-  - Tilde: {fileID: 307571549, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
-  - Minus: {fileID: 1333313091, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
-  - Dot: {fileID: -1747737240, guid: e856b1d2907c4cf4886814b277a55278, type: 3}
+  - <Shader>k__BackingField: {fileID: 4800000, guid: a0561783973fa534b98b14d48c8bded2,
+      type: 3}
+  - <Light0>k__BackingField: {fileID: 645703837, guid: e856b1d2907c4cf4886814b277a55278,
+      type: 3}
+  - <Light1>k__BackingField: {fileID: 474272180, guid: e856b1d2907c4cf4886814b277a55278,
+      type: 3}
+  - <Light2>k__BackingField: {fileID: 909979533, guid: e856b1d2907c4cf4886814b277a55278,
+      type: 3}
+  - <Light3>k__BackingField: {fileID: -487639870, guid: e856b1d2907c4cf4886814b277a55278,
+      type: 3}
+  - <Light4>k__BackingField: {fileID: 1791278646, guid: e856b1d2907c4cf4886814b277a55278,
+      type: 3}
+  - <Light5>k__BackingField: {fileID: -1481233728, guid: e856b1d2907c4cf4886814b277a55278,
+      type: 3}
+  - <Light6>k__BackingField: {fileID: -754390692, guid: e856b1d2907c4cf4886814b277a55278,
+      type: 3}
+  - <Light7>k__BackingField: {fileID: 307571549, guid: e856b1d2907c4cf4886814b277a55278,
+      type: 3}
+  - <Light8>k__BackingField: {fileID: 1333313091, guid: e856b1d2907c4cf4886814b277a55278,
+      type: 3}
+  - <Light9>k__BackingField: {fileID: -1747737240, guid: e856b1d2907c4cf4886814b277a55278,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
